@@ -40,7 +40,7 @@ To deploy and self-host this bot, follow these configuration steps in the [Disco
    - `DISCORD_TOKEN`: Paste the bot token.
    - `DISCORD_CLIENT_ID`: Paste the application client ID.
    - `DISCORD_GUILD_ID`: (Optional) Paste the ID of your developer Discord server. This will register slash commands instantly to that specific server, bypassing the global 1-hour propagation delay.
-   - `AUTH_API_URL`: Points to your hosted AuthLX developer backend API (`https://api.authlx.com/api/v1/dev` by default).
+   - `AUTH_API_URL`: Points to your hosted AuthLX developer backend API (`https://authlx.com/api/v1/dev` by default).
 
 ---
 
