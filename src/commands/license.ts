@@ -89,7 +89,7 @@ export const licenseCommand = {
         const res = await api.generateLicenses({
           appId: selectedAppId, amount, mask,
           lowercaseLetters: false, capitalLetters: true,
-          level, note, expiry: 0, duration: durationSeconds
+          level, note, expiry: durationSeconds, duration: 1
         });
 
         const keys: string[] = res.keys || [];
