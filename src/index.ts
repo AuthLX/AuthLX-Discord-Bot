@@ -2,6 +2,7 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import { config } from './config';
 import { readyEvent } from './events/ready';
 import { interactionEvent } from './events/interaction';
+import { startHealthServer } from './health';
 
 // Create a new client instance
 const client = new Client({
@@ -9,6 +10,9 @@ const client = new Client({
     GatewayIntentBits.Guilds // Required for commands and autocomplete
   ]
 });
+
+// Start the health server
+startHealthServer(client);
 
 // Bind event listeners
 client.once(readyEvent.name, readyEvent.execute);
