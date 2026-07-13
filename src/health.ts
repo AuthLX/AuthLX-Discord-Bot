@@ -39,7 +39,7 @@ export function startHealthServer(client: Client) {
       try {
         const apiRes = await axios.get(`${config.apiUrl}/health`, { timeout: 5000 });
         checks.backend_api.latency = Math.round(performance.now() - apiStart);
-        if (apiRes.data && apiRes.data.status === 'operational') {
+        if (apiRes.data && apiRes.data.status === 'online') {
           checks.backend_api.status = 'online';
         } else {
           checks.backend_api.status = 'degraded';
