@@ -8,8 +8,10 @@ export interface Config {
   discordToken: string;
   clientId: string;
   apiUrl: string;
-  guildId?: string; // Optional: for fast testing in a specific guild
-  healthUrl?: string; // Optional: public health check URL
+  guildId?: string;     // Optional: for fast testing in a specific guild
+  healthUrl?: string;   // Optional: public health check URL
+  termsOfServiceUrl: string;
+  privacyPolicyUrl: string;
 }
 
 // Validate environment variables
@@ -34,5 +36,7 @@ export const config: Config = {
   clientId,
   apiUrl,
   guildId,
-  healthUrl
+  healthUrl,
+  termsOfServiceUrl: 'https://authlx.com/terms',
+  privacyPolicyUrl: 'https://authlx.com/privacy'
 };
