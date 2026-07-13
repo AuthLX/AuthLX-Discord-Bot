@@ -51,6 +51,7 @@ export const appCommand = {
 
   async autocomplete(interaction: AutocompleteInteraction) {
     const secret = db.getUserSecret(interaction.user.id) || undefined;
+    let responded = false;
     try {
       const api = new ApiService({ discordId: interaction.user.id, secret });
       const apps = await api.getApps();
@@ -59,10 +60,14 @@ export const appCommand = {
         .filter((app: any) => app.name.toLowerCase().includes(focusedValue))
         .slice(0, 25)
         .map((app: any) => ({ name: app.name, value: app.id }));
+      responded = true;
       await interaction.respond(filtered);
     } catch (err) {
-      console.error('Autocomplete error:', err);
-      await interaction.respond([]);
+      if (!responded) {
+        try {
+          await interaction.respond([]);
+        } catch {}
+      }
     }
   },
 
