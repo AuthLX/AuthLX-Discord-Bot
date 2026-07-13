@@ -84,6 +84,16 @@ export const helpCommand = {
             `/team view       - View developers, managers, and resellers\n` +
             `\`\`\``,
           inline: false
+        },
+        {
+          name: `${EMOJIS.SHIELD} 7. Legal & Policies`,
+          value: 
+            `\`\`\`\n` +
+            `/terms           - View the AuthLX Terms of Service\n` +
+            `/privacy         - View the AuthLX Privacy Policy\n` +
+            `\`\`\`\n` +
+            `${EMOJIS.LINK} https://authlx.com/terms  •  https://authlx.com/privacy`,
+          inline: false
         }
       )
       .setFooter({ text: 'AuthLX Bot Guide | All commands are permission-enforced in real-time.' })

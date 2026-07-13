@@ -7,6 +7,7 @@ import { teamCommand } from './team';
 import { subscriptionCommand } from './subscription';
 import { sessionCommand } from './session';
 import { helpCommand } from './help';
+import { termsCommand, privacyCommand } from './legal';
 
 export const commands = [
   linkCommand,
@@ -18,5 +19,7 @@ export const commands = [
   teamCommand,
   subscriptionCommand,
   sessionCommand,
-  helpCommand
+  helpCommand,
+  termsCommand,
+  privacyCommand
 ];
