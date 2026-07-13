@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service — AuthLX</title>
+  <meta name="description" content="AuthLX Terms of Service. Read the terms and conditions governing the use of the AuthLX authentication and licensing platform." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0e14;
+      --surface:   #13151f;
+      --border:    #1e2130;
+      --accent:    #5865f2;
+      --accent-2:  #7983f5;
+      --text:      #e2e4f0;
+      --muted:     #8b8fa8;
+      --link:      #7983f5;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .logo-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .badge {
+      margin-left: auto;
+      background: rgba(88,101,242,.15);
+      border: 1px solid rgba(88,101,242,.35);
+      color: var(--accent-2);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      padding: 0.2rem 0.65rem;
+      border-radius: 99px;
+      text-transform: uppercase;
+    }
+
+    /* ── Layout ── */
+    main {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 3.5rem 2rem 6rem;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      margin-bottom: 3rem;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      background: rgba(88,101,242,.12);
+      border: 1px solid rgba(88,101,242,.25);
+      padding: 0.25rem 0.75rem;
+      border-radius: 99px;
+      margin-bottom: 1.2rem;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+
+    /* ── Sections ── */
+    section { margin-bottom: 2.5rem; }
+    h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 3px; height: 1.1em;
+      background: var(--accent);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    p { color: var(--muted); margin-bottom: 0.85rem; }
+    p:last-child { margin-bottom: 0; }
+    ul {
+      list-style: none;
+      margin: 0.5rem 0 0.85rem 0;
+    }
+    ul li {
+      color: var(--muted);
+      padding: 0.3rem 0 0.3rem 1.4rem;
+      position: relative;
+    }
+    ul li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--accent-2);
+      font-weight: 700;
+    }
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--text); font-weight: 600; }
+
+    .highlight-box {
+      background: rgba(88,101,242,.07);
+      border: 1px solid rgba(88,101,242,.2);
+      border-radius: 10px;
+      padding: 1.1rem 1.4rem;
+      margin-top: 0.5rem;
+    }
+    .highlight-box p { margin-bottom: 0; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--link); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="logo" href="https://authlx.com">
+      <span class="logo-dot"></span>
+      AuthLX
+    </a>
+    <span class="badge">Legal</span>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="tag">Terms of Service</div>
+      <h1>Terms of Service</h1>
+      <p class="meta">Effective Date: January 1, 2025 &nbsp;·&nbsp; Last Updated: July 2025</p>
+    </div>
+
+    <div class="highlight-box">
+      <p>By accessing or using AuthLX and its Discord Bot integration, you agree to be bound by these Terms of Service. If you do not agree, please do not use our platform.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <section>
+      <h2>1. Acceptance of Terms</h2>
+      <p>These Terms of Service ("Terms") constitute a legally binding agreement between you ("User", "Developer") and AuthLX ("we", "us", "our"). By registering an account, accessing the API, or installing the AuthLX Discord Bot, you confirm that you have read, understood, and agree to these Terms.</p>
+    </section>
+
+    <section>
+      <h2>2. Platform Description</h2>
+      <p>AuthLX is a free, enterprise-grade authentication and software licensing API designed for native C++, C#, and ImGui applications. The platform provides:</p>
+      <ul>
+        <li>HWID (Hardware ID) locking and device management</li>
+        <li>License key generation and validation</li>
+        <li>User account management with subscription levels</li>
+        <li>Reseller access controls and team management</li>
+        <li>Discord Bot integration for remote administration</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>3. Acceptable Use</h2>
+      <p>You agree to use AuthLX only for lawful purposes. You must <strong>not</strong> use the platform to:</p>
+      <ul>
+        <li>Distribute malware, spyware, or any malicious software</li>
+        <li>Bypass, circumvent, or undermine any security measures</li>
+        <li>Infringe on any intellectual property or third-party rights</li>
+        <li>Sell access to unauthorized, cracked, or illegal software</li>
+        <li>Conduct automated attacks or spam against the API</li>
+        <li>Violate any applicable local, national, or international law</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>4. Account Responsibility</h2>
+      <p>You are solely responsible for maintaining the confidentiality of your API keys, bot tokens, and account credentials. Any activity performed under your account is your responsibility. Notify us immediately at <a href="mailto:support@authlx.com">support@authlx.com</a> if you suspect unauthorized access.</p>
+    </section>
+
+    <section>
+      <h2>5. Discord Bot Integration</h2>
+      <p>The AuthLX Discord Bot is provided as an optional integration tool. By adding the bot to your server, you acknowledge:</p>
+      <ul>
+        <li>The bot stores only your Discord User ID and your AuthLX bot secret token locally</li>
+        <li>All commands execute in real-time and are permission-enforced</li>
+        <li>Bot permissions are granted at the individual user level — not server-wide</li>
+        <li>You are responsible for who in your server links their account to the bot</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>6. Availability & Modifications</h2>
+      <p>We strive to maintain high availability but do not guarantee uninterrupted access. We reserve the right to modify, suspend, or discontinue any part of the service at any time, with or without notice. We may also update these Terms; continued use of the service constitutes acceptance of the revised Terms.</p>
+    </section>
+
+    <section>
+      <h2>7. Limitation of Liability</h2>
+      <p>To the maximum extent permitted by law, AuthLX shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use the platform, even if we have been advised of the possibility of such damages.</p>
+    </section>
+
+    <section>
+      <h2>8. Termination</h2>
+      <p>We may suspend or terminate your account at any time if you violate these Terms. Upon termination, your right to access the platform ceases immediately. Provisions that by their nature should survive termination will remain in effect.</p>
+    </section>
+
+    <section>
+      <h2>9. Governing Law</h2>
+      <p>These Terms shall be governed by and construed in accordance with applicable international law. Any disputes shall be resolved in good faith through direct communication before any legal proceedings.</p>
+    </section>
+
+    <section>
+      <h2>10. Contact</h2>
+      <p>If you have any questions about these Terms, please contact us:</p>
+      <ul>
+        <li>Email: <a href="mailto:support@authlx.com">support@authlx.com</a></li>
+        <li>Website: <a href="https://authlx.com">https://authlx.com</a></li>
+        <li>Privacy Policy: <a href="https://authlx.com/privacy">https://authlx.com/privacy</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 AuthLX. All rights reserved. &nbsp;·&nbsp;
+      <a href="https://authlx.com">Home</a> &nbsp;·&nbsp;
+      <a href="https://authlx.com/privacy">Privacy Policy</a> &nbsp;·&nbsp;
+      <a href="mailto:support@authlx.com">Contact</a>
+    </p>
+  </footer>
+
+</body>
+</html>
