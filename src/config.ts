@@ -31,12 +31,20 @@ if (!clientId) {
   process.exit(1);
 }
 
+const cleanBaseUrl = (url: string | undefined): string | null => {
+  if (!url) return null;
+  // If the user provided the full health URL like http://host:port/health, strip /health from the end
+  return url.endsWith('/health') ? url.substring(0, url.length - 7) : url;
+};
+
+const baseUrl = cleanBaseUrl(healthUrl);
+
 export const config: Config = {
   discordToken,
   clientId,
   apiUrl,
   guildId,
   healthUrl,
-  termsOfServiceUrl: 'https://authlx.com/terms',
-  privacyPolicyUrl: 'https://authlx.com/privacy'
+  termsOfServiceUrl: baseUrl ? `${baseUrl}/terms` : 'https://authlx.com/terms',
+  privacyPolicyUrl: baseUrl ? `${baseUrl}/privacy` : 'https://authlx.com/privacy'
 };

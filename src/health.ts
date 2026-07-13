@@ -74,6 +74,26 @@ export function startHealthServer(client: Client) {
         timestamp: new Date().toISOString(),
         checks
       }, null, 2));
+    } else if (req.url === '/terms' && req.method === 'GET') {
+      try {
+        const termsPath = path.join(process.cwd(), 'legal', 'terms.txt');
+        const content = fs.readFileSync(termsPath, 'utf-8');
+        res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end(content);
+      } catch (err: any) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Error loading Terms of Service.');
+      }
+    } else if (req.url === '/privacy' && req.method === 'GET') {
+      try {
+        const privacyPath = path.join(process.cwd(), 'legal', 'privacy.txt');
+        const content = fs.readFileSync(privacyPath, 'utf-8');
+        res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end(content);
+      } catch (err: any) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Error loading Privacy Policy.');
+      }
     } else {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       res.end('Not Found');

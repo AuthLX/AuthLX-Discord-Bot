@@ -1,0 +1,53 @@
+AuthLX Terms of Service
+Effective Date: January 1, 2025
+Last Updated: July 2025
+
+By accessing or using AuthLX and its Discord Bot integration, you agree to be bound by these Terms of Service. If you do not agree, please do not use our platform.
+
+1. Acceptance of Terms
+These Terms of Service ("Terms") constitute a legally binding agreement between you ("User", "Developer") and AuthLX ("we", "us", "our"). By registering an account, accessing the API, or installing the AuthLX Discord Bot, you confirm that you have read, understood, and agree to these Terms.
+
+2. Platform Description
+AuthLX is a free, enterprise-grade authentication and software licensing API designed for native C++, C#, and ImGui applications. The platform provides:
+- HWID (Hardware ID) locking and device management
+- License key generation and validation
+- User account management with subscription levels
+- Reseller access controls and team management
+- Discord Bot integration for remote administration
+
+3. Acceptable Use
+You agree to use AuthLX only for lawful purposes. You must not use the platform to:
+- Distribute malware, spyware, or any malicious software
+- Bypass, circumvent, or undermine any security measures
+- Infringe on any intellectual property or third-party rights
+- Sell access to unauthorized, cracked, or illegal software
+- Conduct automated attacks or spam against the API
+- Violate any applicable local, national, or international law
+
+4. Account Responsibility
+You are solely responsible for maintaining the confidentiality of your API keys, bot tokens, and account credentials. Any activity performed under your account is your responsibility. Notify us immediately at support@authlx.com if you suspect unauthorized access.
+
+5. Discord Bot Integration
+The AuthLX Discord Bot is provided as an optional integration tool. By adding the bot to your server, you acknowledge:
+- The bot stores only your Discord User ID and your AuthLX bot secret token locally
+- All commands execute in real-time and are permission-enforced
+- Bot permissions are granted at the individual user level — not server-wide
+- You are responsible for who in your server links their account to the bot
+
+6. Availability & Modifications
+We strive to maintain high availability but do not guarantee uninterrupted access. We reserve the right to modify, suspend, or discontinue any part of the service at any time, with or without notice. We may also update these Terms; continued use of the service constitutes acceptance of the revised Terms.
+
+7. Limitation of Liability
+To the maximum extent permitted by law, AuthLX shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use the platform, even if we have been advised of the possibility of such damages.
+
+8. Termination
+We may suspend or terminate your account at any time if you violate these Terms. Upon termination, your right to access the platform ceases immediately. Provisions that by their nature should survive termination will remain in effect.
+
+9. Governing Law
+These Terms shall be governed by and construed in accordance with applicable international law. Any disputes shall be resolved in good faith through direct communication before any legal proceedings.
+
+10. Contact
+If you have any questions about these Terms, please contact us:
+- Email: support@authlx.com
+- Website: https://authlx.com
+- Privacy Policy: https://authlx.com/privacy

@@ -1,0 +1,45 @@
+AuthLX Privacy Policy
+Effective Date: January 1, 2025
+Last Updated: July 2025
+
+We respect your privacy and are committed to protecting it. This Privacy Policy details what information we collect, how it is processed, and the security measures we employ to safeguard your application and user data.
+
+1. Information We Collect
+To provide licensing and authentication services, we collect three primary categories of data:
+- Developer Account Data: Email addresses, usernames, and cryptographic hashes of passwords provided during registration.
+- Client Application Data: Usernames, passwords, hardware IDs (HWID), IP addresses, and license key status associated with applications configured under your developer profile.
+- Discord Bot Integration Data: When linking your Discord account, we store only your Discord User ID and the linked developer API secret key. We do not read or store message contents, user presences, or other server-wide metadata.
+
+2. How We Use Information
+Collected data is used solely to run and secure the licensing API. This includes:
+- Authenticating developers and client users logging into your applications
+- Validating license keys and verifying active client sessions
+- Enforcing hardware ID locking to prevent key sharing
+- Blocking brute force attacks, leaked passwords, and suspicious IP networks (VPN/Proxy checks)
+
+3. Data Sharing & Third Parties
+AuthLX does not sell, lease, rent, or trade your data to third parties. Data is only shared with essential infrastructure providers (such as cloud hosting) to deliver the service, or if explicitly required by law enforcement.
+
+4. Data Retention
+We retain your account details and application data as long as your developer account remains active. If you delete your account or an application from the web dashboard, all associated client users, licenses, sessions, and logs are permanently and immediately purged from our active databases.
+
+5. Security Measures
+We implement industry-grade technical controls to keep your data secure:
+- Encryption: All connections to our APIs are secured using HTTPS/TLS.
+- Hashing: All user passwords are encrypted using strong, modern cryptographic hashing algorithms before being stored.
+- Isolation: Database records are strictly compartmentalized by application ID, ensuring data cannot be cross-referenced or exposed across applications.
+
+6. Your Choices & Access
+You maintain full control over the data stored in AuthLX. Through the developer dashboard or API endpoints, you can view, edit, update, reset, or delete your account records, license keys, and client user accounts at any time.
+
+7. Children's Privacy
+AuthLX is designed for software developers and is not directed at children under the age of 13. We do not knowingly collect personal information from children.
+
+8. Changes to this Policy
+We may update this Privacy Policy from time to time to reflect changes in our practices or regulatory requirements. We will notify developers of significant updates via the dashboard or standard announcements.
+
+9. Contact
+If you have any questions or concerns regarding this Privacy Policy or your data, please reach out to us:
+- Email: support@authlx.com
+- Website: https://authlx.com
+- Terms of Service: https://authlx.com/terms
