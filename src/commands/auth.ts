@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, ApplicationIntegrationType, InteractionContextType } from 'discord.js';
 import { db } from '../utils/db';
 import { ApiService } from '../services/api';
+import { EMOJIS } from '../utils/emojis';
 
 export const linkCommand = {
   data: new SlashCommandBuilder()
@@ -26,7 +27,7 @@ export const linkCommand = {
 
       if (!res || !res.linked || res.profile.discord_id !== discordId) {
         return interaction.editReply({
-          content: '❌ **Error:** The provided secret token does not match your Discord account details. Please link your Discord account on the web dashboard first.'
+          content: `${EMOJIS.ERROR} **Error:** The provided secret token does not match your Discord account details. Please link your Discord account on the web dashboard first.`
         });
       }
 
@@ -34,11 +35,11 @@ export const linkCommand = {
       db.setUserSecret(discordId, token);
 
       return interaction.editReply({
-        content: `✅ **Success!** Your Discord account (\`${discordUsername}\`) has been securely linked with your AuthLX developer profile.\n\nYou can now use other slash commands to manage your applications.`
+        content: `${EMOJIS.SUCCESS} **Success!** Your Discord account (\`${discordUsername}\`) has been securely linked with your AuthLX developer profile.\n\nYou can now use other slash commands to manage your applications.`
       });
     } catch (err: any) {
       return interaction.editReply({
-        content: `❌ **Error:** Failed to verify token. Make sure you have linked your Discord account under the dashboard Profile settings first.\n*(Details: ${err.message || err})*`
+        content: `${EMOJIS.ERROR} **Error:** Failed to verify token. Make sure you have linked your Discord account under the dashboard Profile settings first.\n*(Details: ${err.message || err})*`
       });
     }
   }
@@ -57,13 +58,13 @@ export const unlinkCommand = {
 
     if (!removed) {
       return interaction.reply({
-        content: 'ℹ️ Your Discord account was not linked to any AuthLX profile.',
+        content: `${EMOJIS.INFO} Your Discord account was not linked to any AuthLX profile.`,
         ephemeral: true
       });
     }
 
     return interaction.reply({
-      content: '✅ **Success!** Your Discord account has been unlinked. The local secret token mapping has been deleted.',
+      content: `${EMOJIS.SUCCESS} **Success!** Your Discord account has been unlinked. The local secret token mapping has been deleted.`,
       ephemeral: true
     });
   }

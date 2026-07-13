@@ -6,6 +6,7 @@ import { settingsCommand } from './settings';
 import { teamCommand } from './team';
 import { subscriptionCommand } from './subscription';
 import { sessionCommand } from './session';
+import { helpCommand } from './help';
 
 export const commands = [
   linkCommand,
@@ -16,5 +17,6 @@ export const commands = [
   settingsCommand,
   teamCommand,
   subscriptionCommand,
-  sessionCommand
+  sessionCommand,
+  helpCommand
 ];

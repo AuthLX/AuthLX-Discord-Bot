@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, ApplicationIntegrationType, InteractionContextType } from 'discord.js';
 import { ApiService } from '../services/api';
 import { db } from '../utils/db';
+import { EMOJIS } from '../utils/emojis';
 
 export const teamCommand = {
   data: new SlashCommandBuilder()
@@ -25,8 +26,8 @@ export const teamCommand = {
     if (!selectedAppId) {
       const apps = await api.getApps().catch(() => []);
       const msg = (!apps || apps.length === 0)
-        ? '❌ You have no applications. Create one on the web dashboard first.'
-        : '❌ No application selected. Use `/app switch` to set your active application.';
+        ? `${EMOJIS.ERROR} You have no applications. Create one on the web dashboard first.`
+        : `${EMOJIS.ERROR} No application selected. Use \`/app switch\` to set your active application.`;
       return interaction.reply({ content: msg, ephemeral: true });
     }
 
@@ -40,16 +41,16 @@ export const teamCommand = {
 
       if (members.length === 0) {
         return interaction.editReply({
-          content: `ℹ️ No team members registered for **${appName}**.\nYou can invite team members from the web dashboard.`
+          content: `${EMOJIS.INFO} No team members registered for **${appName}**.\nYou can invite team members from the web dashboard.`
         });
       }
 
       const roleIcon = (role: string) => {
         const r = (role || '').toLowerCase();
-        if (r === 'admin' || r === 'master_admin') return '👑';
-        if (r === 'manager') return '🛡️';
-        if (r === 'reseller') return '🏪';
-        return '👤';
+        if (r === 'admin' || r === 'master_admin') return EMOJIS.CROWN;
+        if (r === 'manager') return EMOJIS.SHIELD;
+        if (r === 'reseller') return EMOJIS.STORE;
+        return EMOJIS.USER;
       };
 
       const formatBalance = (m: any) => {
@@ -63,15 +64,15 @@ export const teamCommand = {
       };
 
       const embed = new EmbedBuilder()
-        .setTitle(`👥 Team — ${appName}`)
+        .setTitle(`${EMOJIS.TEAM} Team — ${appName}`)
         .setColor('#5865F2')
         .setDescription(
           members.map((m: any) => {
             const icon = roleIcon(m.role);
             const roleLabel = (m.role || 'Member').charAt(0).toUpperCase() + (m.role || 'Member').slice(1);
-            const emailLine = m.email ? `📧 ${m.email}` : '';
-            const balanceLine = m.role?.toLowerCase() === 'reseller' ? `💰 Balance: ${formatBalance(m)}` : '';
-            const unlimitedLabel = m.is_unlimited_reseller ? ' ♾️ Unlimited' : '';
+            const emailLine = m.email ? `${EMOJIS.EMAIL} ${m.email}` : '';
+            const balanceLine = m.role?.toLowerCase() === 'reseller' ? `${EMOJIS.BALANCE} Balance: ${formatBalance(m)}` : '';
+            const unlimitedLabel = m.is_unlimited_reseller ? ` ${EMOJIS.UNLIMITED} Unlimited` : '';
             const permLines = m.role?.toLowerCase() === 'reseller' ? unlimitedLabel : '';
 
             return [
@@ -90,9 +91,9 @@ export const teamCommand = {
     } catch (err: any) {
       const msg = err.message || 'An unexpected error occurred.';
       if (interaction.deferred || interaction.replied) {
-        return interaction.editReply({ content: `❌ **Error:** ${msg}` });
+        return interaction.editReply({ content: `${EMOJIS.ERROR} **Error:** ${msg}` });
       }
-      return interaction.reply({ content: `❌ **Error:** ${msg}`, ephemeral: true });
+      return interaction.reply({ content: `${EMOJIS.ERROR} **Error:** ${msg}`, ephemeral: true });
     }
   }
 };

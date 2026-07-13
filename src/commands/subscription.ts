@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, ApplicationIntegrationType, InteractionContextType } from 'discord.js';
 import { ApiService } from '../services/api';
 import { db } from '../utils/db';
+import { EMOJIS } from '../utils/emojis';
 
 export const subscriptionCommand = {
   data: new SlashCommandBuilder()
@@ -40,8 +41,8 @@ export const subscriptionCommand = {
     if (!selectedAppId) {
       const apps = await api.getApps().catch(() => []);
       const msg = (!apps || apps.length === 0)
-        ? '❌ You have no applications. Create one on the web dashboard first.'
-        : '❌ No application selected. Use `/app switch` to set your active application.';
+        ? `${EMOJIS.ERROR} You have no applications. Create one on the web dashboard first.`
+        : `${EMOJIS.ERROR} No application selected. Use \`/app switch\` to set your active application.`;
       return interaction.reply({ content: msg, ephemeral: true });
     }
 
@@ -53,11 +54,11 @@ export const subscriptionCommand = {
         const subs = await api.getSubscriptions(selectedAppId);
 
         if (!subs || subs.length === 0) {
-          return interaction.editReply({ content: `ℹ️ No subscription plans found for **${appName}**.` });
+          return interaction.editReply({ content: `${EMOJIS.INFO} No subscription plans found for **${appName}**.` });
         }
 
         const embed = new EmbedBuilder()
-          .setTitle(`💳 Subscription Plans — ${appName}`)
+          .setTitle(`${EMOJIS.BALANCE} Subscription Plans — ${appName}`)
           .setColor('#5865F2')
           .setDescription(
             subs.map((s: any, i: number) =>
@@ -82,12 +83,12 @@ export const subscriptionCommand = {
         return interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle('✅ Subscription Plan Created')
+              .setTitle(`${EMOJIS.SUCCESS} Subscription Plan Created`)
               .setColor('#22c55e')
               .addFields(
-                { name: '📦 Plan Name', value: sub?.name || name, inline: true },
+                { name: `${EMOJIS.APP} Plan Name`, value: sub?.name || name, inline: true },
                 { name: '🎯 Level', value: `Level ${level}`, inline: true },
-                { name: '🏷️ App', value: `\`${appName}\``, inline: true }
+                { name: `${EMOJIS.TAG} App`, value: `\`${appName}\``, inline: true }
               )
               .setTimestamp()
           ]
@@ -105,7 +106,7 @@ export const subscriptionCommand = {
         );
 
         if (!match) {
-          return interaction.editReply({ content: `❌ Subscription plan \`${name}\` not found in **${appName}**.` });
+          return interaction.editReply({ content: `${EMOJIS.ERROR} Subscription plan \`${name}\` not found in **${appName}**.` });
         }
 
         await api.deleteSubscription(match.id);
@@ -113,11 +114,11 @@ export const subscriptionCommand = {
         return interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle('🗑️ Subscription Plan Deleted')
+              .setTitle(`${EMOJIS.TRASH} Subscription Plan Deleted`)
               .setColor('#ef4444')
               .addFields(
-                { name: '📦 Plan Name', value: match.name || name, inline: true },
-                { name: '🏷️ App', value: `\`${appName}\``, inline: true }
+                { name: `${EMOJIS.APP} Plan Name`, value: match.name || name, inline: true },
+                { name: `${EMOJIS.TAG} App`, value: `\`${appName}\``, inline: true }
               )
               .setTimestamp()
           ]
@@ -127,9 +128,9 @@ export const subscriptionCommand = {
     } catch (err: any) {
       const msg = err.message || 'An unexpected error occurred.';
       if (interaction.deferred || interaction.replied) {
-        return interaction.editReply({ content: `❌ **Error:** ${msg}` });
+        return interaction.editReply({ content: `${EMOJIS.ERROR} **Error:** ${msg}` });
       }
-      return interaction.reply({ content: `❌ **Error:** ${msg}`, ephemeral: true });
+      return interaction.reply({ content: `${EMOJIS.ERROR} **Error:** ${msg}`, ephemeral: true });
     }
   }
 };

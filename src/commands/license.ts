@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, ApplicationIntegrationType, InteractionContextType } from 'discord.js';
 import { ApiService } from '../services/api';
 import { db } from '../utils/db';
+import { EMOJIS } from '../utils/emojis';
 
 export const licenseCommand = {
   data: new SlashCommandBuilder()
@@ -69,8 +70,8 @@ export const licenseCommand = {
     if (!selectedAppId) {
       const apps = await api.getApps().catch(() => []);
       const msg = (!apps || apps.length === 0)
-        ? '❌ You have no applications on your AuthLX dashboard. Create one on the web dashboard first.'
-        : '❌ No application selected. Use `/app switch` to set your active application.';
+        ? `${EMOJIS.ERROR} You have no applications on your AuthLX dashboard. Create one on the web dashboard first.`
+        : `${EMOJIS.ERROR} No application selected. Use \`/app switch\` to set your active application.`;
       return interaction.reply({ content: msg, ephemeral: true });
     }
 
@@ -96,10 +97,10 @@ export const licenseCommand = {
         const keysText = keys.map(k => `\`${k}\``).join('\n');
 
         const embed = new EmbedBuilder()
-          .setTitle('🔑 Licenses Generated Successfully')
+          .setTitle(`${EMOJIS.LICENSE} Licenses Generated Successfully`)
           .setColor('#5865F2')
           .addFields(
-            { name: 'Application', value: `\`${appName}\``, inline: true },
+            { name: `${EMOJIS.TAG} Application`, value: `\`${appName}\``, inline: true },
             { name: 'Amount', value: `${amount} key(s)`, inline: true },
             { name: 'Level', value: `Level ${level}`, inline: true },
             { name: 'Duration', value: getFriendlyDurationName(durationInput), inline: true }
@@ -119,15 +120,15 @@ export const licenseCommand = {
         const licenses = await api.getLicenses(selectedAppId, filter);
 
         if (!licenses || licenses.length === 0) {
-          return interaction.editReply({ content: `ℹ️ No ${filter === 'all' ? '' : filter + ' '}licenses found for **${appName}**.` });
+          return interaction.editReply({ content: `${EMOJIS.INFO} No ${filter === 'all' ? '' : filter + ' '}licenses found for **${appName}**.` });
         }
 
         // Show up to 10 per message (Discord embed limit)
         const display = licenses.slice(0, 10);
-        const statusIcon = (s: string) => s === 'used' ? '🔴 Used' : s === 'banned' ? '⛔ Banned' : '🟢 Unused';
+        const statusIcon = (s: string) => s === 'used' ? `${EMOJIS.INACTIVE} Used` : s === 'banned' ? `${EMOJIS.ERROR} Banned` : `${EMOJIS.ACTIVE} Unused`;
 
         const embed = new EmbedBuilder()
-          .setTitle(`🔑 License List — ${appName}`)
+          .setTitle(`${EMOJIS.LICENSE} License List — ${appName}`)
           .setColor('#5865F2')
           .setDescription(
             display.map((lic: any, i: number) => {
@@ -159,17 +160,17 @@ export const licenseCommand = {
         const match = licenses.find((l: any) => (l.key || l.license_key || '').toLowerCase() === key.toLowerCase());
 
         if (!match) {
-          return interaction.editReply({ content: `❌ License key \`${key}\` not found in **${appName}**.` });
+          return interaction.editReply({ content: `${EMOJIS.ERROR} License key \`${key}\` not found in **${appName}**.` });
         }
         if (match.status === 'banned') {
-          return interaction.editReply({ content: `ℹ️ License \`${key}\` is already banned.` });
+          return interaction.editReply({ content: `${EMOJIS.INFO} License \`${key}\` is already banned.` });
         }
 
         await api.banLicense(match.id);
         return interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle('⛔ License Banned')
+              .setTitle(`${EMOJIS.ERROR} License Banned`)
               .setColor('#ef4444')
               .addFields(
                 { name: 'Key', value: `\`${key}\``, inline: false },
@@ -190,14 +191,14 @@ export const licenseCommand = {
         const match = licenses.find((l: any) => (l.key || l.license_key || '').toLowerCase() === key.toLowerCase());
 
         if (!match) {
-          return interaction.editReply({ content: `❌ License key \`${key}\` not found in **${appName}**.` });
+          return interaction.editReply({ content: `${EMOJIS.ERROR} License key \`${key}\` not found in **${appName}**.` });
         }
 
         await api.deleteLicense(match.id);
         return interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle('🗑️ License Deleted')
+              .setTitle(`${EMOJIS.TRASH} License Deleted`)
               .setColor('#ef4444')
               .addFields(
                 { name: 'Key', value: `\`${key}\``, inline: false },
@@ -212,9 +213,9 @@ export const licenseCommand = {
     } catch (err: any) {
       const msg = err.message || 'An unexpected error occurred.';
       if (interaction.deferred || interaction.replied) {
-        return interaction.editReply({ content: `❌ **Error:** ${msg}` });
+        return interaction.editReply({ content: `${EMOJIS.ERROR} **Error:** ${msg}` });
       }
-      return interaction.reply({ content: `❌ **Error:** ${msg}`, ephemeral: true });
+      return interaction.reply({ content: `${EMOJIS.ERROR} **Error:** ${msg}`, ephemeral: true });
     }
   }
 };

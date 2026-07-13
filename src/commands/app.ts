@@ -5,6 +5,7 @@ import {
 } from 'discord.js';
 import { db } from '../utils/db';
 import { ApiService } from '../services/api';
+import { EMOJIS } from '../utils/emojis';
 
 export const appCommand = {
   data: new SlashCommandBuilder()
@@ -87,7 +88,7 @@ export const appCommand = {
 
         if (!/^\d+(\.\d+)*$/.test(version)) {
           return interaction.editReply({
-            content: `❌ Invalid version format \`${version}\`. Must be numbers separated by dots, e.g. \`1.0.0\` or \`2.1\`.`
+            content: `${EMOJIS.ERROR} Invalid version format \`${version}\`. Must be numbers separated by dots, e.g. \`1.0.0\` or \`2.1\`.`
           });
         }
 
@@ -96,13 +97,13 @@ export const appCommand = {
         return interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle('✅ Application Created')
+              .setTitle(`${EMOJIS.SUCCESS} Application Created`)
               .setColor('#22c55e')
               .addFields(
-                { name: '📱 App Name', value: `\`${app?.name || name}\``, inline: true },
+                { name: `${EMOJIS.APP} App Name`, value: `\`${app?.name || name}\``, inline: true },
                 { name: '🔢 Version', value: `\`${app?.version || version}\``, inline: true },
                 { name: '🆔 App ID', value: `\`${app?.id || 'Check dashboard'}\``, inline: false },
-                { name: '🔑 API Key', value: app?.api_key ? `||\`${app.api_key}\`||` : '*(Check dashboard)*', inline: false }
+                { name: `${EMOJIS.LICENSE} API Key`, value: app?.api_key ? `||\`${app.api_key}\`||` : '*(Check dashboard)*', inline: false }
               )
               .setFooter({ text: 'Use /app switch to activate this application.' })
               .setTimestamp()
@@ -133,22 +134,22 @@ export const appCommand = {
         const membership = appData?.membership;
         const effectiveRole = membership?.role || 'admin';
 
-        const statusLabel = appData?.status ? '🟢 Active' : '🔴 Disabled';
+        const statusLabel = appData?.status ? `${EMOJIS.ACTIVE} Active` : `${EMOJIS.INACTIVE} Disabled`;
         const version = appData?.version ? `v${appData.version}` : '';
 
         // Build role-specific fields
         const roleDisplayFields = buildRoleFields(effectiveRole, membership, botProfile);
 
         const embed = new EmbedBuilder()
-          .setTitle(`✅ Switched to: ${appName} ${version}`)
+          .setTitle(`${EMOJIS.SUCCESS} Switched to: ${appName} ${version}`)
           .setColor('#22c55e')
           .addFields(
-            { name: '📊 App Status', value: statusLabel, inline: true },
+            { name: `${EMOJIS.STATS} App Status`, value: statusLabel, inline: true },
             { name: '🎭 Your Role', value: formatRole(effectiveRole), inline: true },
-            { name: '👥 Users', value: `${statsData?.totalUsers ?? '—'}`, inline: true },
-            { name: '🔑 Licenses', value: `${statsData?.totalLicenses ?? '—'}`, inline: true },
-            { name: '💳 Subscriptions', value: `${statsData?.totalSubscriptions ?? '—'}`, inline: true },
-            { name: '🟢 Sessions', value: `${statsData?.activeSessions ?? '—'}`, inline: true },
+            { name: `${EMOJIS.USER} Users`, value: `${statsData?.totalUsers ?? '—'}`, inline: true },
+            { name: `${EMOJIS.LICENSE} Licenses`, value: `${statsData?.totalLicenses ?? '—'}`, inline: true },
+            { name: `${EMOJIS.PLAN} Subscriptions`, value: `${statsData?.totalSubscriptions ?? '—'}`, inline: true },
+            { name: `${EMOJIS.ACTIVE} Sessions`, value: `${statsData?.activeSessions ?? '—'}`, inline: true },
             ...roleDisplayFields
           )
           .setFooter({ text: 'All commands now execute under this application. Permissions enforced in real-time.' })
@@ -169,24 +170,24 @@ export const appCommand = {
 
         if (!apps || apps.length === 0) {
           return interaction.editReply({
-            content: '❌ You have no applications. Create one with `/app create` or on the web dashboard.'
+            content: `${EMOJIS.ERROR} You have no applications. Create one with \`/app create\` or on the web dashboard.`
           });
         }
 
         const embed = new EmbedBuilder()
-          .setTitle('📱 Your Applications')
+          .setTitle(`${EMOJIS.APP} Your Applications`)
           .setColor('#5865F2')
           .setDescription(
             apps.map((app: any) => {
               const isSelected = app.id === selectedAppId;
-              const statusDot = app.status ? '🟢' : '🔴';
+              const statusDot = app.status ? EMOJIS.ACTIVE : EMOJIS.INACTIVE;
               const role = app.membership?.role || 'admin';
               const roleLabel = formatRole(role);
               const version = app.version ? ` \`v${app.version}\`` : '';
-              return `${isSelected ? '▶ ' : '   '}${statusDot} **${app.name}**${version} — ${roleLabel}\n› ID: \`${app.id}\``;
+              return `${isSelected ? `${EMOJIS.ARROW} ` : '   '}${statusDot} **${app.name}**${version} — ${roleLabel}\n› ID: \`${app.id}\``;
             }).join('\n\n')
           )
-          .setFooter({ text: `Total: ${apps.length} app(s) | ▶ = currently selected | Use /app switch to change` })
+          .setFooter({ text: `Total: ${apps.length} app(s) | ${EMOJIS.ARROW} = currently selected | Use /app switch to change` })
           .setTimestamp();
 
         return interaction.editReply({ embeds: [embed] });
@@ -202,9 +203,9 @@ export const appCommand = {
         if (!selectedAppId) {
           const apps = await api.getApps().catch(() => []);
           if (!apps || apps.length === 0) {
-            return interaction.editReply({ content: '❌ You have no applications. Create one with `/app create`.' });
+            return interaction.editReply({ content: `${EMOJIS.ERROR} You have no applications. Create one with \`/app create\`.` });
           }
-          return interaction.editReply({ content: '❌ No application selected. Use `/app switch` to set your active application.' });
+          return interaction.editReply({ content: `${EMOJIS.ERROR} No application selected. Use \`/app switch\` to set your active application.` });
         }
 
         const [apps, stats] = await Promise.all([
@@ -214,23 +215,23 @@ export const appCommand = {
 
         const activeApp = apps.find((app: any) => app.id === selectedAppId);
         const appName = activeApp?.name || 'Unknown Application';
-        const statusLabel = activeApp?.status ? '🟢 Active' : '🔴 Disabled';
+        const statusLabel = activeApp?.status ? `${EMOJIS.ACTIVE} Active` : `${EMOJIS.INACTIVE} Disabled`;
         const version = activeApp?.version ? `v${activeApp.version}` : 'N/A';
 
         const embed = new EmbedBuilder()
-          .setTitle(`📊 Application Stats: ${appName}`)
+          .setTitle(`${EMOJIS.STATS} Application Stats: ${appName}`)
           .setDescription(`Live overview for \`${selectedAppId}\`.`)
           .setColor('#5865F2')
           .addFields(
-            { name: '📊 Status', value: statusLabel, inline: true },
+            { name: `${EMOJIS.STATS} Status`, value: statusLabel, inline: true },
             { name: '🔢 Version', value: `\`${version}\``, inline: true },
-            { name: '🔑 Total Licenses', value: `${stats?.totalLicenses ?? 0}`, inline: true },
+            { name: `${EMOJIS.LICENSE} Total Licenses`, value: `${stats?.totalLicenses ?? 0}`, inline: true },
             { name: '✨ Unused Licenses', value: `${stats?.unusedLicenses ?? 0}`, inline: true },
-            { name: '👥 Total Users', value: `${stats?.totalUsers ?? 0}`, inline: true },
-            { name: '🟢 Active Sessions', value: `${stats?.activeSessions ?? 0}`, inline: true },
+            { name: `${EMOJIS.USER} Total Users`, value: `${stats?.totalUsers ?? 0}`, inline: true },
+            { name: `${EMOJIS.ACTIVE} Active Sessions`, value: `${stats?.activeSessions ?? 0}`, inline: true },
             { name: '🎟️ Active Tokens', value: `${stats?.totalTokens ?? 0}`, inline: true },
-            { name: '💳 Subscriptions', value: `${stats?.totalSubscriptions ?? 0}`, inline: true },
-            { name: '⚠️ Blacklisted', value: `${stats?.blacklistedHwids ?? stats?.blacklisted ?? 0}`, inline: true }
+            { name: `${EMOJIS.PLAN} Subscriptions`, value: `${stats?.totalSubscriptions ?? 0}`, inline: true },
+            { name: `${EMOJIS.WARNING} Blacklisted`, value: `${stats?.blacklistedHwids ?? stats?.blacklisted ?? 0}`, inline: true }
           )
           .setFooter({ text: 'AuthLX Bot Integration • Live data' })
           .setTimestamp();
@@ -247,7 +248,7 @@ export const appCommand = {
         const botProfile = profileRes?.profile;
 
         if (!selectedAppId) {
-          return interaction.editReply({ content: '❌ No application selected. Use `/app switch` first.' });
+          return interaction.editReply({ content: `${EMOJIS.ERROR} No application selected. Use \`/app switch\` first.` });
         }
 
         // Fetch all data in parallel — no caching, all real-time
@@ -263,18 +264,18 @@ export const appCommand = {
         const membership = app?.membership;
         const effectiveRole = membership?.role || 'admin';
 
-        const yn = (v: any) => v ? '✅' : '❌';
-        const statusLabel = app?.status ? '🟢 Active' : '🔴 Disabled';
+        const yn = (v: any) => v ? EMOJIS.SUCCESS : EMOJIS.ERROR;
+        const statusLabel = app?.status ? `${EMOJIS.ACTIVE} Active` : `${EMOJIS.INACTIVE} Disabled`;
 
         // Bot-level permissions (real-time from DB via getDiscordProfile)
         const botPerms = botProfile ? [
-          botProfile.bot_can_view_overview ? '📊 Overview' : null,
-          botProfile.bot_can_manage_apps ? '📱 Apps' : null,
-          botProfile.bot_can_manage_licenses ? '🔑 Licenses' : null,
-          botProfile.bot_can_manage_users ? '👥 Users' : null,
-          botProfile.bot_can_manage_subscriptions ? '💳 Subscriptions' : null,
+          botProfile.bot_can_view_overview ? `${EMOJIS.STATS} Overview` : null,
+          botProfile.bot_can_manage_apps ? `${EMOJIS.APP} Apps` : null,
+          botProfile.bot_can_manage_licenses ? `${EMOJIS.LICENSE} Licenses` : null,
+          botProfile.bot_can_manage_users ? `${EMOJIS.USER} Users` : null,
+          botProfile.bot_can_manage_subscriptions ? `${EMOJIS.PLAN} Subscriptions` : null,
           botProfile.bot_can_manage_sessions ? '⚡ Sessions' : null,
-          botProfile.bot_can_manage_settings ? '⚙️ Settings' : null,
+          botProfile.bot_can_manage_settings ? `${EMOJIS.SETTINGS} Settings` : null,
           botProfile.bot_can_view_team ? '👁️ Team' : null
         ].filter(Boolean).join(' · ') || 'None' : '—';
 
@@ -286,25 +287,25 @@ export const appCommand = {
           .setColor(app?.status ? '#5865F2' : '#ef4444')
           .addFields(
             // App Overview
-            { name: '📊 Status', value: statusLabel, inline: true },
+            { name: `${EMOJIS.STATS} Status`, value: statusLabel, inline: true },
             { name: '🔢 Version', value: `\`${app?.version || 'N/A'}\``, inline: true },
             { name: '🎭 Your Role', value: formatRole(effectiveRole), inline: true },
             // Live Stats
-            { name: '👥 Users', value: `${statsData?.totalUsers ?? 0}`, inline: true },
-            { name: '🔑 Licenses', value: `${statsData?.totalLicenses ?? 0}`, inline: true },
+            { name: `${EMOJIS.USER} Users`, value: `${statsData?.totalUsers ?? 0}`, inline: true },
+            { name: `${EMOJIS.LICENSE} Licenses`, value: `${statsData?.totalLicenses ?? 0}`, inline: true },
             { name: '✨ Unused', value: `${statsData?.unusedLicenses ?? 0}`, inline: true },
-            { name: '🟢 Sessions', value: `${statsData?.activeSessions ?? 0}`, inline: true },
-            { name: '💳 Plans', value: `${statsData?.totalSubscriptions ?? 0}`, inline: true },
+            { name: `${EMOJIS.ACTIVE} Sessions`, value: `${statsData?.activeSessions ?? 0}`, inline: true },
+            { name: `${EMOJIS.PLAN} Plans`, value: `${statsData?.totalSubscriptions ?? 0}`, inline: true },
             { name: '🎟️ Tokens', value: `${statsData?.totalTokens ?? 0}`, inline: true },
             // Security Settings
-            { name: '🔒 Force HWID', value: yn(app?.force_hwid), inline: true },
+            { name: `${EMOJIS.LOCK} Force HWID`, value: yn(app?.force_hwid), inline: true },
             { name: '🔍 Hash Check', value: yn(app?.hash_check), inline: true },
             { name: '🔐 Hashes', value: `${hashes.length} registered`, inline: true },
             { name: '🚫 Block Leaked PWD', value: yn(app?.block_leaked_passwords), inline: true },
-            { name: '🌐 Block VPNs', value: yn(app?.block_vpns), inline: true },
+            { name: `${EMOJIS.IP} Block VPNs`, value: yn(app?.block_vpns), inline: true },
             { name: '📏 Min Username', value: `${app?.min_username_length || 1} chars`, inline: true },
             // Bot Permissions (live from DB)
-            { name: '🤖 Bot Permissions (Live)', value: botPerms, inline: false },
+            { name: `${EMOJIS.BOT} Bot Permissions (Live)`, value: botPerms, inline: false },
             // Role-specific
             ...roleFields
           )
@@ -323,13 +324,13 @@ export const appCommand = {
         const appName = profileRes?.profile?.selected_app_name || selectedAppId;
 
         if (!selectedAppId) {
-          return interaction.editReply({ content: '❌ No application selected. Use `/app switch` first.' });
+          return interaction.editReply({ content: `${EMOJIS.ERROR} No application selected. Use \`/app switch\` first.` });
         }
 
         // GET current state first
         const appData = await api.getAppById(selectedAppId);
         if (appData?.status === false || appData?.status === 0) {
-          return interaction.editReply({ content: `ℹ️ **${appName}** is already paused (disabled).` });
+          return interaction.editReply({ content: `${EMOJIS.INFO} **${appName}** is already paused (disabled).` });
         }
 
         await api.updateAppSettings(selectedAppId, { status: 0 });
@@ -340,8 +341,8 @@ export const appCommand = {
               .setTitle('⏸️ Application Paused')
               .setColor('#f59e0b')
               .addFields(
-                { name: '📱 Application', value: `\`${appName}\``, inline: true },
-                { name: '📊 New Status', value: '🔴 Disabled', inline: true }
+                { name: `${EMOJIS.APP} Application`, value: `\`${appName}\``, inline: true },
+                { name: `${EMOJIS.STATS} New Status`, value: `${EMOJIS.INACTIVE} Disabled`, inline: true }
               )
               .setDescription('All user logins are now blocked. Use `/app resume` to re-enable.')
               .setTimestamp()
@@ -358,12 +359,12 @@ export const appCommand = {
         const appName = profileRes?.profile?.selected_app_name || selectedAppId;
 
         if (!selectedAppId) {
-          return interaction.editReply({ content: '❌ No application selected. Use `/app switch` first.' });
+          return interaction.editReply({ content: `${EMOJIS.ERROR} No application selected. Use \`/app switch\` first.` });
         }
 
         const appData = await api.getAppById(selectedAppId);
         if (appData?.status === true || appData?.status === 1) {
-          return interaction.editReply({ content: `ℹ️ **${appName}** is already active (running).` });
+          return interaction.editReply({ content: `${EMOJIS.INFO} **${appName}** is already active (running).` });
         }
 
         await api.updateAppSettings(selectedAppId, { status: 1 });
@@ -374,8 +375,8 @@ export const appCommand = {
               .setTitle('▶️ Application Resumed')
               .setColor('#22c55e')
               .addFields(
-                { name: '📱 Application', value: `\`${appName}\``, inline: true },
-                { name: '📊 New Status', value: '🟢 Active', inline: true }
+                { name: `${EMOJIS.APP} Application`, value: `\`${appName}\``, inline: true },
+                { name: `${EMOJIS.STATS} New Status`, value: `${EMOJIS.ACTIVE} Active`, inline: true }
               )
               .setDescription('User logins are now enabled.')
               .setTimestamp()
@@ -386,9 +387,9 @@ export const appCommand = {
     } catch (err: any) {
       const msg = err.message || 'An unexpected error occurred.';
       if (interaction.deferred || interaction.replied) {
-        return interaction.editReply({ content: `❌ **Error:** ${msg}` });
+        return interaction.editReply({ content: `${EMOJIS.ERROR} **Error:** ${msg}` });
       }
-      return interaction.reply({ content: `❌ **Error:** ${msg}`, ephemeral: true });
+      return interaction.reply({ content: `${EMOJIS.ERROR} **Error:** ${msg}`, ephemeral: true });
     }
   }
 };
@@ -397,10 +398,10 @@ export const appCommand = {
 
 function formatRole(role: string): string {
   const map: Record<string, string> = {
-    admin: '👑 Admin (Owner)',
-    master_admin: '👑 Master Admin',
-    manager: '🛡️ Manager',
-    reseller: '🏪 Reseller'
+    admin: `${EMOJIS.CROWN} Admin (Owner)`,
+    master_admin: `${EMOJIS.CROWN} Master Admin`,
+    manager: `${EMOJIS.SHIELD} Manager`,
+    reseller: `${EMOJIS.STORE} Reseller`
   };
   return map[role?.toLowerCase()] || role;
 }
@@ -419,7 +420,7 @@ function buildRoleFields(role: string, membership: any, botProfile: any): { name
   if (r === 'reseller') {
     const isUnlimited = !!membership.is_unlimited_reseller;
     if (isUnlimited) {
-      fields.push({ name: '♾️ Reseller Type', value: 'Unlimited — No balance restrictions', inline: false });
+      fields.push({ name: `${EMOJIS.UNLIMITED} Reseller Type`, value: 'Unlimited — No balance restrictions', inline: false });
     } else {
       // Show balance for each duration tier
       const balanceLines = [
@@ -433,12 +434,12 @@ function buildRoleFields(role: string, membership: any, botProfile: any): { name
       ].filter(Boolean);
 
       const balanceText = balanceLines.length > 0 ? balanceLines.join('\n') : 'No balance — contact admin';
-      fields.push({ name: '💰 Your License Balance', value: balanceText, inline: false });
+      fields.push({ name: `${EMOJIS.BALANCE} Your License Balance`, value: balanceText, inline: false });
 
       // What resellers can do
       fields.push({
         name: '🔐 Your Permissions',
-        value: '✅ View/Generate Licenses | ✅ View/Edit Users you created\n❌ Cannot create users manually | ❌ Cannot manage settings',
+        value: `${EMOJIS.SUCCESS} View/Generate Licenses | ${EMOJIS.SUCCESS} View/Edit Users you created\n${EMOJIS.ERROR} Cannot create users manually | ${EMOJIS.ERROR} Cannot manage settings`,
         inline: false
       });
     }
@@ -453,12 +454,12 @@ function buildRoleFields(role: string, membership: any, botProfile: any): { name
     // For managers, bot-level permissions are what controls access here since
     // requirePermission checks the permissions table fresh on every API call
     const perms = [
-      botProfile?.bot_can_manage_licenses ? '✅ Licenses' : '❌ Licenses',
-      botProfile?.bot_can_manage_users ? '✅ Users' : '❌ Users',
-      botProfile?.bot_can_manage_subscriptions ? '✅ Subscriptions' : '❌ Subscriptions',
-      botProfile?.bot_can_manage_sessions ? '✅ Sessions' : '❌ Sessions',
-      botProfile?.bot_can_manage_settings ? '✅ Settings' : '❌ Settings',
-      botProfile?.bot_can_view_team ? '✅ Team View' : '❌ Team View',
+      botProfile?.bot_can_manage_licenses ? `${EMOJIS.SUCCESS} Licenses` : `${EMOJIS.ERROR} Licenses`,
+      botProfile?.bot_can_manage_users ? `${EMOJIS.SUCCESS} Users` : `${EMOJIS.ERROR} Users`,
+      botProfile?.bot_can_manage_subscriptions ? `${EMOJIS.SUCCESS} Subscriptions` : `${EMOJIS.ERROR} Subscriptions`,
+      botProfile?.bot_can_manage_sessions ? `${EMOJIS.SUCCESS} Sessions` : `${EMOJIS.ERROR} Sessions`,
+      botProfile?.bot_can_manage_settings ? `${EMOJIS.SUCCESS} Settings` : `${EMOJIS.ERROR} Settings`,
+      botProfile?.bot_can_view_team ? `${EMOJIS.SUCCESS} Team View` : `${EMOJIS.ERROR} Team View`,
     ].join(' | ');
 
     fields.push({
