@@ -224,12 +224,12 @@ export const appCommand = {
           .setColor('#5865F2')
           .addFields(
             { name: `${EMOJIS.STATS} Status`, value: statusLabel, inline: true },
-            { name: '🔢 Version', value: `\`${version}\``, inline: true },
+            { name: `${EMOJIS.TAG} Version`, value: `\`${version}\``, inline: true },
             { name: `${EMOJIS.LICENSE} Total Licenses`, value: `${stats?.totalLicenses ?? 0}`, inline: true },
-            { name: '✨ Unused Licenses', value: `${stats?.unusedLicenses ?? 0}`, inline: true },
+            { name: `${EMOJIS.LICENSE} Unused Licenses`, value: `${stats?.unusedLicenses ?? 0}`, inline: true },
             { name: `${EMOJIS.USER} Total Users`, value: `${stats?.totalUsers ?? 0}`, inline: true },
             { name: `${EMOJIS.ACTIVE} Active Sessions`, value: `${stats?.activeSessions ?? 0}`, inline: true },
-            { name: '🎟️ Active Tokens', value: `${stats?.totalTokens ?? 0}`, inline: true },
+            { name: `${EMOJIS.LICENSE} Active Tokens`, value: `${stats?.totalTokens ?? 0}`, inline: true },
             { name: `${EMOJIS.PLAN} Subscriptions`, value: `${stats?.totalSubscriptions ?? 0}`, inline: true },
             { name: `${EMOJIS.WARNING} Blacklisted`, value: `${stats?.blacklistedHwids ?? stats?.blacklisted ?? 0}`, inline: true }
           )
@@ -274,9 +274,9 @@ export const appCommand = {
           botProfile.bot_can_manage_licenses ? `${EMOJIS.LICENSE} Licenses` : null,
           botProfile.bot_can_manage_users ? `${EMOJIS.USER} Users` : null,
           botProfile.bot_can_manage_subscriptions ? `${EMOJIS.PLAN} Subscriptions` : null,
-          botProfile.bot_can_manage_sessions ? '⚡ Sessions' : null,
+          botProfile.bot_can_manage_sessions ? `${EMOJIS.SESSIONS} Sessions` : null,
           botProfile.bot_can_manage_settings ? `${EMOJIS.SETTINGS} Settings` : null,
-          botProfile.bot_can_view_team ? '👁️ Team' : null
+          botProfile.bot_can_view_team ? `${EMOJIS.TEAM} Team` : null
         ].filter(Boolean).join(' · ') || 'None' : '—';
 
         // Role-specific context
@@ -288,22 +288,22 @@ export const appCommand = {
           .addFields(
             // App Overview
             { name: `${EMOJIS.STATS} Status`, value: statusLabel, inline: true },
-            { name: '🔢 Version', value: `\`${app?.version || 'N/A'}\``, inline: true },
+            { name: `${EMOJIS.TAG} Version`, value: `\`${app?.version || 'N/A'}\``, inline: true },
             { name: '🎭 Your Role', value: formatRole(effectiveRole), inline: true },
             // Live Stats
             { name: `${EMOJIS.USER} Users`, value: `${statsData?.totalUsers ?? 0}`, inline: true },
             { name: `${EMOJIS.LICENSE} Licenses`, value: `${statsData?.totalLicenses ?? 0}`, inline: true },
-            { name: '✨ Unused', value: `${statsData?.unusedLicenses ?? 0}`, inline: true },
+            { name: `${EMOJIS.LICENSE} Unused`, value: `${statsData?.unusedLicenses ?? 0}`, inline: true },
             { name: `${EMOJIS.ACTIVE} Sessions`, value: `${statsData?.activeSessions ?? 0}`, inline: true },
             { name: `${EMOJIS.PLAN} Plans`, value: `${statsData?.totalSubscriptions ?? 0}`, inline: true },
-            { name: '🎟️ Tokens', value: `${statsData?.totalTokens ?? 0}`, inline: true },
+            { name: `${EMOJIS.LICENSE} Tokens`, value: `${statsData?.totalTokens ?? 0}`, inline: true },
             // Security Settings
             { name: `${EMOJIS.LOCK} Force HWID`, value: yn(app?.force_hwid), inline: true },
             { name: '🔍 Hash Check', value: yn(app?.hash_check), inline: true },
-            { name: '🔐 Hashes', value: `${hashes.length} registered`, inline: true },
-            { name: '🚫 Block Leaked PWD', value: yn(app?.block_leaked_passwords), inline: true },
+            { name: `${EMOJIS.SHIELD} Hashes`, value: `${hashes.length} registered`, inline: true },
+            { name: `${EMOJIS.LOCK} Block Leaked PWD`, value: yn(app?.block_leaked_passwords), inline: true },
             { name: `${EMOJIS.IP} Block VPNs`, value: yn(app?.block_vpns), inline: true },
-            { name: '📏 Min Username', value: `${app?.min_username_length || 1} chars`, inline: true },
+            { name: `${EMOJIS.USER} Min Username`, value: `${app?.min_username_length || 1} chars`, inline: true },
             // Bot Permissions (live from DB)
             { name: `${EMOJIS.BOT} Bot Permissions (Live)`, value: botPerms, inline: false },
             // Role-specific
@@ -338,7 +338,7 @@ export const appCommand = {
         return interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle('⏸️ Application Paused')
+              .setTitle(`${EMOJIS.INACTIVE} Application Paused`)
               .setColor('#f59e0b')
               .addFields(
                 { name: `${EMOJIS.APP} Application`, value: `\`${appName}\``, inline: true },
@@ -372,7 +372,7 @@ export const appCommand = {
         return interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle('▶️ Application Resumed')
+              .setTitle(`${EMOJIS.ACTIVE} Application Resumed`)
               .setColor('#22c55e')
               .addFields(
                 { name: `${EMOJIS.APP} Application`, value: `\`${appName}\``, inline: true },

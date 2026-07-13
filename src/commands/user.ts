@@ -117,11 +117,11 @@ export const userCommand = {
           .setColor(u.status?.toLowerCase() === 'banned' ? '#ef4444' : '#5865F2')
           .addFields(
             { name: `${EMOJIS.STATS} Status`, value: statusIcon(u.status), inline: true },
-            { name: '🎯 Level', value: `Level ${u.subscription_level || 1}`, inline: true },
+            { name: `${EMOJIS.STATS} Level`, value: `Level ${u.subscription_level || 1}`, inline: true },
             { name: `${EMOJIS.EMAIL} Email`, value: u.email || 'None', inline: true },
             { name: `${EMOJIS.LOCK} HWID`, value: u.hwid ? `Locked \`${u.hwid.substring(0, 20)}...\`` : 'Not set / Unlocked', inline: false },
-            { name: '📅 Expires', value: expires, inline: true },
-            { name: '🗓️ Created', value: created, inline: true },
+            { name: `${EMOJIS.TIME} Expires`, value: expires, inline: true },
+            { name: `${EMOJIS.TIME} Created`, value: created, inline: true },
             { name: `${EMOJIS.TAG} Notes`, value: u.notes || '—', inline: false },
             { name: '🆔 User ID', value: `\`${u.id}\``, inline: false }
           )
@@ -171,10 +171,10 @@ export const userCommand = {
               .setColor('#22c55e')
               .addFields(
                 { name: `${EMOJIS.USER} Username`, value: user.username || username, inline: true },
-                { name: '🎯 Level', value: `Level ${level}`, inline: true },
+                { name: `${EMOJIS.STATS} Level`, value: `Level ${level}`, inline: true },
                 { name: `${EMOJIS.STATS} Status`, value: status.charAt(0).toUpperCase() + status.slice(1), inline: true },
                 { name: `${EMOJIS.EMAIL} Email`, value: email || 'None', inline: true },
-                { name: '📅 Expires', value: expires, inline: true },
+                { name: `${EMOJIS.TIME} Expires`, value: expires, inline: true },
                 { name: `${EMOJIS.TAG} App`, value: `\`${appName}\``, inline: true }
               )
               .setTimestamp()
@@ -215,8 +215,8 @@ export const userCommand = {
 
         const changedFields = Object.keys(payload).map(k => {
           const labels: Record<string, string> = {
-            password: '🔑 Password', email: `${EMOJIS.EMAIL} Email`, status: `${EMOJIS.STATS} Status`,
-            subscription_level: '🎯 Level', notes: `${EMOJIS.TAG} Notes`
+            password: `${EMOJIS.LOCK} Password`, email: `${EMOJIS.EMAIL} Email`, status: `${EMOJIS.STATS} Status`,
+            subscription_level: `${EMOJIS.STATS} Level`, notes: `${EMOJIS.TAG} Notes`
           };
           return `${labels[k] || k}: \`${payload[k]}\``;
         }).join('\n');
@@ -224,7 +224,7 @@ export const userCommand = {
         return interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle(`✏️ User Updated: ${username}`)
+              .setTitle(`${EMOJIS.USER} User Updated: ${username}`)
               .setColor('#f59e0b')
               .setDescription(`**Changes applied:**\n${changedFields}`)
               .addFields({ name: `${EMOJIS.TAG} App`, value: `\`${appName}\``, inline: true })

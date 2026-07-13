@@ -14,11 +14,11 @@ export const EMOJIS = {
   LOADING: '<a:483862loading:1526175586010009641>',
   ACTIVE: '<a:29423greendot:1526175800859033610>',
   INACTIVE: '<a:89675reddot:1526175470947799072>',
-  
+
   // Roles and Permissions
   CROWN: '<:982066crow:1526175802943602728>',
   SHIELD: '<:943972shield:1526175519492673757>',
-  
+
   // Entities
   BOT: '<:487333bot:1526175560835924030>',
   APP: '<:157030approvedids:1526175540015534210>',
@@ -33,7 +33,7 @@ export const EMOJIS = {
   SESSIONS: '<:332547vintagekeywithwings:1526175783440093194>',
   PLAN: '<:275349scribblepaper:1526175888465727599>',
   LOCK: '<:81496blockedids:1526175668726141028>',
-  
+
   // Metrics & Attributes
   STATS: '<:9230stats:1526175839580852266>',
   IP: '<:19500locationyt:1526175649234944030>',
@@ -41,7 +41,7 @@ export const EMOJIS = {
   UNLIMITED: '<:1848_infinity_duo1:1526175706323882004>',
   EMAIL: '<:701524neongmailicon:1526175727366438973>',
   BALANCE: '<:11998cashbagwhite:1526175832857510039>',
-  
+
   // Formatting & Visuals
   BULLET: '<a:8871blackhashtag:1526175619539538030>',
   ARROW: '<a:259419darkbluearrow:1526175631904079922>',

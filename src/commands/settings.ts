@@ -94,13 +94,13 @@ export const settingsCommand = {
           .setColor('#5865F2')
           .addFields(
             { name: `${EMOJIS.STATS} Status`, value: statusLabel, inline: true },
-            { name: '🔢 Version', value: `\`${app?.version || 'Not set'}\``, inline: true },
+            { name: `${EMOJIS.TAG} Version`, value: `\`${app?.version || 'Not set'}\``, inline: true },
             { name: `${EMOJIS.LOCK} Force HWID`, value: yn(app?.force_hwid), inline: true },
-            { name: '🔍 Hash Check', value: yn(app?.hash_check), inline: true },
-            { name: '🚫 Block Leaked Passwords', value: yn(app?.block_leaked_passwords), inline: true },
-            { name: '🔑 Token Validation', value: yn(app?.token_validation), inline: true },
-            { name: '📏 Min Username Length', value: `${app?.min_username_length || 1} chars`, inline: true },
-            { name: '🔐 HWID Method', value: app?.hwid_method || 'windows_user', inline: true },
+            { name: `${EMOJIS.SHIELD} Hash Check`, value: yn(app?.hash_check), inline: true },
+            { name: `${EMOJIS.LOCK} Block Leaked Passwords`, value: yn(app?.block_leaked_passwords), inline: true },
+            { name: `${EMOJIS.LOCK} Token Validation`, value: yn(app?.token_validation), inline: true },
+            { name: `${EMOJIS.USER} Min Username Length`, value: `${app?.min_username_length || 1} chars`, inline: true },
+            { name: `${EMOJIS.LOCK} HWID Method`, value: app?.hwid_method || 'windows_user', inline: true },
             { name: `${EMOJIS.SHIELD} Integrity Hashes`, value: `${hashes.length} registered`, inline: true }
           )
           .setFooter({ text: `App ID: ${selectedAppId}` })
@@ -270,7 +270,7 @@ export const settingsCommand = {
               .setColor('#ef4444')
               .addFields(
                 { name: `${EMOJIS.TAG} App`, value: `\`${appName}\``, inline: true },
-                { name: '🗑️ Hashes Removed', value: `${count}`, inline: true }
+                { name: `${EMOJIS.TRASH} Hashes Removed`, value: `${count}`, inline: true }
               )
               .setFooter({ text: 'All integrity hash checks disabled until new hashes are added.' })
               .setTimestamp()
