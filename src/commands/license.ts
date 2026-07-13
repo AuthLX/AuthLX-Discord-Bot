@@ -130,14 +130,18 @@ export const licenseCommand = {
           .setTitle(`🔑 License List — ${appName}`)
           .setColor('#5865F2')
           .setDescription(
-            `**Filter:** ${filter.charAt(0).toUpperCase() + filter.slice(1)} | **Total shown:** ${display.length} of ${licenses.length}\n\n` +
             display.map((lic: any, i: number) => {
+              const durationStr = formatFriendlyDuration(lic.expiry_duration);
               const expires = lic.expiration_date
                 ? new Date(lic.expiration_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                 : 'Never';
+              const detailLine = lic.status === 'used' 
+                ? `› Expires: ${expires} | Used By: \`${lic.used_by_username || 'N/A'}\``
+                : `› Duration: **${durationStr}** | Note: ${lic.note || '—'}`;
+
               return `**${i + 1}.** \`${lic.key || lic.license_key || 'N/A'}\`\n` +
-                `› Status: ${statusIcon(lic.status || 'unused')} | Level: ${lic.level || 1}\n` +
-                `› Expires: ${expires} | Note: ${lic.note || '—'}`;
+                `› Status: ${statusIcon(lic.status || 'unused')} | Level: ${lic.subscription_level || lic.level || 1}\n` +
+                detailLine;
             }).join('\n\n')
           )
           .setFooter({ text: licenses.length > 10 ? `Showing 10 of ${licenses.length} — view all on dashboard` : 'AuthLX Bot Integration' })
@@ -240,4 +244,16 @@ function getFriendlyDurationName(input: string): string {
     '1y': '1 Year', 'lifetime': 'Lifetime'
   };
   return map[input] || input;
+}
+
+function formatFriendlyDuration(seconds: number): string {
+  if (!seconds && seconds !== 0) return 'N/A';
+  if (seconds >= 315360000) return 'Lifetime';
+  if (seconds >= 31536000) return `${Math.floor(seconds / 31536000)} Year(s)`;
+  if (seconds >= 2592000) return `${Math.floor(seconds / 2592000)} Month(s)`;
+  if (seconds >= 604800) return `${Math.floor(seconds / 604800)} Week(s)`;
+  if (seconds >= 86400) return `${Math.floor(seconds / 86400)} Day(s)`;
+  if (seconds >= 3600) return `${Math.floor(seconds / 3600)} Hour(s)`;
+  if (seconds >= 60) return `${Math.floor(seconds / 60)} Minute(s)`;
+  return `${seconds} Second(s)`;
 }
