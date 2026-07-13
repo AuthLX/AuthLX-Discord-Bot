@@ -81,6 +81,7 @@ export function startHealthServer(client: Client) {
   });
 
   server.listen(port, () => {
-    console.log(`📡 Bot Health Server is running on port ${port}  →  GET /health`);
+    const displayUrl = config.healthUrl || `http://localhost:${port}/health`;
+    console.log(`📡 Bot Health Server is running on port ${port}  →  ${displayUrl}`);
   });
 }
