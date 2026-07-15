@@ -306,4 +306,23 @@ export class ApiService {
       throw new Error(this.handleError(err));
     }
   }
+
+  // ===================== BOT ROLE SYNC =====================
+  async getBotLinkedUsers() {
+    try {
+      const res = await this.client.get('/bot/linked-users');
+      return res.data.data as Array<{ discord_id: string; plan: string; plan_expires_at: string | null }>;
+    } catch (err) {
+      throw new Error(this.handleError(err));
+    }
+  }
+
+  async getBotLinkedUser(discordId: string) {
+    try {
+      const res = await this.client.get(`/bot/linked-users/${discordId}`);
+      return res.data.data as { discord_id: string; plan: string; plan_expires_at: string | null } | null;
+    } catch (err) {
+      throw new Error(this.handleError(err));
+    }
+  }
 }

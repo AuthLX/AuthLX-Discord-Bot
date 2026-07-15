@@ -4,6 +4,7 @@ import path from 'path';
 import axios from 'axios';
 import { Client } from 'discord.js';
 import { config } from './config';
+import { syncUserRole, syncAllRoles } from './services/roleSyncService';
 
 export function startHealthServer(client: Client) {
   const port = process.env.BOT_HEALTH_PORT ? parseInt(process.env.BOT_HEALTH_PORT, 10) : 3002;
@@ -94,6 +95,46 @@ export function startHealthServer(client: Client) {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         res.end('Error loading Privacy Policy.');
       }
+    } else if (req.url === '/sync-user' && req.method === 'POST') {
+      // 1. Authorize request using bot token
+      const botToken = req.headers['x-bot-token'];
+      if (!botToken || botToken !== config.discordToken) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ status: 'error', message: 'Unauthorized' }));
+        return;
+      }
+
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk;
+      });
+
+      req.on('end', async () => {
+        try {
+          const parsed = JSON.parse(body);
+          const { discordId } = parsed;
+
+          if (discordId) {
+            console.log(`📡 [WEBHOOK] Received role sync request for user: ${discordId}`);
+            // Run single user sync asynchronously to prevent blocking the response
+            syncUserRole(client, discordId).catch(err => {
+              console.error(`❌ [WEBHOOK] Sync failed for user ${discordId}:`, err.message);
+            });
+          } else {
+            console.log('📡 [WEBHOOK] Received global role sync request');
+            // Run full sync asynchronously
+            syncAllRoles(client).catch(err => {
+              console.error('❌ [WEBHOOK] Global sync failed:', err.message);
+            });
+          }
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'success', message: 'Sync scheduled' }));
+        } catch (err: any) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'error', message: 'Invalid body' }));
+        }
+      });
     } else {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       res.end('Not Found');

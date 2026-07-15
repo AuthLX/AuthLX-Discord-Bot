@@ -10,6 +10,8 @@ export interface Config {
   apiUrl: string;
   guildId?: string;     // Optional: for fast testing in a specific guild
   healthUrl?: string;   // Optional: public health check URL
+  developerRoleId?: string;
+  sellerRoleId?: string;
   termsOfServiceUrl: string;
   privacyPolicyUrl: string;
 }
@@ -20,6 +22,8 @@ const clientId = process.env.DISCORD_CLIENT_ID;
 const apiUrl = process.env.AUTH_API_URL || 'http://localhost:3001/api/v1/dev';
 const guildId = process.env.DISCORD_GUILD_ID;
 const healthUrl = process.env.BOT_HEALTH_URL;
+const developerRoleId = process.env.DISCORD_DEVELOPER_ROLE_ID;
+const sellerRoleId = process.env.DISCORD_SELLER_ROLE_ID;
 
 if (!discordToken) {
   console.error("❌ ERROR: DISCORD_TOKEN is missing in environment variables!");
@@ -45,6 +49,8 @@ export const config: Config = {
   apiUrl,
   guildId,
   healthUrl,
+  developerRoleId,
+  sellerRoleId,
   termsOfServiceUrl: baseUrl ? `${baseUrl}/terms` : 'https://authlx.com/terms',
   privacyPolicyUrl: baseUrl ? `${baseUrl}/privacy` : 'https://authlx.com/privacy'
 };

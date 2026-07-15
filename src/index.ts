@@ -2,12 +2,14 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import { config } from './config';
 import { readyEvent } from './events/ready';
 import { interactionEvent } from './events/interaction';
+import { guildMemberAddEvent } from './events/guildMemberAdd';
 import { startHealthServer } from './health';
 
 // Create a new client instance
 const client = new Client({
   intents: [
-    GatewayIntentBits.Guilds // Required for commands and autocomplete
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers
   ]
 });
 
@@ -17,6 +19,7 @@ startHealthServer(client);
 // Bind event listeners
 client.once(readyEvent.name, readyEvent.execute);
 client.on(interactionEvent.name, interactionEvent.execute);
+client.on(guildMemberAddEvent.name, guildMemberAddEvent.execute);
 
 // Login to Discord
 client.login(config.discordToken)

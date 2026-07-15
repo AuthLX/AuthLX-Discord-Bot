@@ -1,6 +1,7 @@
 import { Client, REST, Routes } from 'discord.js';
 import { config } from '../config';
 import { commands } from '../commands';
+import { syncAllRoles, startPeriodicSync } from '../services/roleSyncService';
 
 export const readyEvent = {
   name: 'ready',
@@ -51,5 +52,12 @@ export const readyEvent = {
     } catch (error) {
       console.error('⚠️  Failed to update ToS/Privacy on Discord Application:', error);
     }
+
+    // ─── Trigger Roles Sync ────────────────────────────────────────────────────
+    console.log('🔄 [ROLE SYNC] Running initial roles synchronization...');
+    syncAllRoles(client).catch(err => {
+      console.error('❌ [ROLE SYNC] Initial roles sync failed:', err.message);
+    });
+    startPeriodicSync(client);
   }
 };
