@@ -103,7 +103,7 @@ export async function syncAllRoles(client: Client) {
     return;
   }
 
-  console.log('🔄 [ROLE SYNC] Starting full roles reconciliation...');
+  console.log('\n🔄 [ROLE SYNC] Starting full roles reconciliation...');
 
   try {
     const guild = await client.guilds.fetch(guildId);
@@ -119,10 +119,20 @@ export async function syncAllRoles(client: Client) {
     // 2. Fetch all members of the guild (needs GuildMembers intent)
     const members = await guild.members.fetch();
 
-    console.log(`📊 [ROLE SYNC] Found ${members.size} server members and ${linkedUsers.length} linked dashboard users.`);
+    // 3. Compute subscription statistics
+    const activeDevelopers = linkedUsers.filter(u => u.plan === 'Developer' && isSubscriptionActive(u.plan, u.plan_expires_at));
+    const activeSellers = linkedUsers.filter(u => u.plan === 'Seller' && isSubscriptionActive(u.plan, u.plan_expires_at));
+    
+    let linkedInServerCount = 0;
+    let rolesAddedCount = 0;
+    let rolesRemovedCount = 0;
 
+    // Iterate and reconcile
     for (const [memberId, member] of members) {
       const userPlan = linkedUsersMap.get(memberId) || null;
+      if (userPlan) {
+        linkedInServerCount++;
+      }
 
       const hasActiveDeveloper = userPlan && userPlan.plan === 'Developer' && isSubscriptionActive(userPlan.plan, userPlan.plan_expires_at);
       const hasActiveSeller = userPlan && userPlan.plan === 'Seller' && isSubscriptionActive(userPlan.plan, userPlan.plan_expires_at);
@@ -132,10 +142,12 @@ export async function syncAllRoles(client: Client) {
         const hasDevRole = member.roles.cache.has(devRoleId);
         if (hasActiveDeveloper && !hasDevRole) {
           await member.roles.add(devRoleId);
-          console.log(`➕ [ROLE SYNC] Added Developer role to ${member.user.tag}`);
+          rolesAddedCount++;
+          console.log(`  ➕ [ADD] Developer role -> ${member.user.tag}`);
         } else if (!hasActiveDeveloper && hasDevRole) {
           await member.roles.remove(devRoleId);
-          console.log(`➖ [ROLE SYNC] Removed Developer role from ${member.user.tag}`);
+          rolesRemovedCount++;
+          console.log(`  ➖ [REMOVE] Developer role -> ${member.user.tag}`);
         }
       }
 
@@ -144,15 +156,30 @@ export async function syncAllRoles(client: Client) {
         const hasSellerRole = member.roles.cache.has(sellerRoleId);
         if (hasActiveSeller && !hasSellerRole) {
           await member.roles.add(sellerRoleId);
-          console.log(`➕ [ROLE SYNC] Added Seller role to ${member.user.tag}`);
+          rolesAddedCount++;
+          console.log(`  ➕ [ADD] Seller role -> ${member.user.tag}`);
         } else if (!hasActiveSeller && hasSellerRole) {
           await member.roles.remove(sellerRoleId);
-          console.log(`➖ [ROLE SYNC] Removed Seller role from ${member.user.tag}`);
+          rolesRemovedCount++;
+          console.log(`  ➖ [REMOVE] Seller role -> ${member.user.tag}`);
         }
       }
     }
 
-    console.log('✅ [ROLE SYNC] Full roles reconciliation completed.');
+    // 4. Print beautiful consolidated report to console
+    console.log('┌────────────────────────────────────────────────────────┐');
+    console.log('│               ROLE SYNC TELEMETRY REPORT               │');
+    console.log('├────────────────────────────────────────────────────────┤');
+    console.log(`│ Total Discord Server Members  : ${members.size.toString().padEnd(22)} │`);
+    console.log(`│ Total Integrated DB Users     : ${linkedUsers.length.toString().padEnd(22)} │`);
+    console.log(`│ Integrated Users in Server    : ${linkedInServerCount.toString().padEnd(22)} │`);
+    console.log(`│ Active Developer Plans in DB  : ${activeDevelopers.length.toString().padEnd(22)} │`);
+    console.log(`│ Active Seller Plans in DB     : ${activeSellers.length.toString().padEnd(22)} │`);
+    console.log('├────────────────────────────────────────────────────────┤');
+    console.log(`│ Roles Assigned This Cycle     : ${rolesAddedCount.toString().padEnd(22)} │`);
+    console.log(`│ Roles Stripped This Cycle     : ${rolesRemovedCount.toString().padEnd(22)} │`);
+    console.log('└────────────────────────────────────────────────────────┘\n');
+
   } catch (error: any) {
     console.error('❌ [ROLE SYNC] Full reconciliation failed:', error.message);
   }
