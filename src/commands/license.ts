@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, ApplicationIntegrationType, InteractionContextType } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder, ApplicationIntegrationType, InteractionContextType } from 'discord.js';
 import { ApiService } from '../services/api';
 import { db } from '../utils/db';
 import { EMOJIS } from '../utils/emojis';
@@ -11,7 +11,7 @@ export const licenseCommand = {
     .setContexts(InteractionContextType.Guild, InteractionContextType.BotDM, InteractionContextType.PrivateChannel)
     .addSubcommand(sub =>
       sub.setName('generate')
-        .setDescription('Generate new license keys for your active application.')
+        .setDescription('Generate new license keys for your application.')
         .addIntegerOption(o => o.setName('amount').setDescription('Number of keys to generate (1-50) — default: 1').setMinValue(1).setMaxValue(50).setRequired(false))
         .addStringOption(o =>
           o.setName('duration').setDescription('Duration of the generated licenses — default: 30 Days').setRequired(false)
@@ -32,10 +32,11 @@ export const licenseCommand = {
         )
         .addStringOption(o => o.setName('mask').setDescription('Key format mask (e.g. XXXX-XXXX-XXXX-XXXX)').setRequired(false))
         .addStringOption(o => o.setName('note').setDescription('Memo or tag for these keys').setRequired(false))
+        .addStringOption(o => o.setName('app').setDescription('Target application (defaults to your active active app)').setAutocomplete(true).setRequired(false))
     )
     .addSubcommand(sub =>
       sub.setName('list')
-        .setDescription('List licenses for your active application.')
+        .setDescription('List licenses for your application.')
         .addStringOption(o =>
           o.setName('filter').setDescription('Filter by status').setRequired(false)
             .addChoices(
@@ -44,17 +45,42 @@ export const licenseCommand = {
               { name: 'Used Only', value: 'used' }
             )
         )
+        .addStringOption(o => o.setName('app').setDescription('Target application (defaults to active app)').setAutocomplete(true).setRequired(false))
     )
     .addSubcommand(sub =>
       sub.setName('ban')
         .setDescription('Ban a license key so it can no longer be used.')
         .addStringOption(o => o.setName('key').setDescription('The license key to ban (e.g. XXXX-XXXX-XXXX-XXXX)').setRequired(true))
+        .addStringOption(o => o.setName('app').setDescription('Target application (defaults to active app)').setAutocomplete(true).setRequired(false))
     )
     .addSubcommand(sub =>
       sub.setName('delete')
         .setDescription('Permanently delete a license key.')
         .addStringOption(o => o.setName('key').setDescription('The license key to delete').setRequired(true))
+        .addStringOption(o => o.setName('app').setDescription('Target application (defaults to active app)').setAutocomplete(true).setRequired(false))
     ),
+
+  async autocomplete(interaction: AutocompleteInteraction) {
+    const secret = db.getUserSecret(interaction.user.id) || undefined;
+    let responded = false;
+    try {
+      const api = new ApiService({ discordId: interaction.user.id, secret });
+      const apps = await api.getApps();
+      const focusedValue = interaction.options.getFocused().toLowerCase();
+      const filtered = apps
+        .filter((app: any) => app.name.toLowerCase().includes(focusedValue))
+        .slice(0, 25)
+        .map((app: any) => ({ name: `${app.name} (${app.membership?.role || 'owner'})`, value: app.id }));
+      responded = true;
+      await interaction.respond(filtered);
+    } catch (err) {
+      if (!responded) {
+        try {
+          await interaction.respond([]);
+        } catch {}
+      }
+    }
+  },
 
   async execute(interaction: ChatInputCommandInteraction) {
     const subcommand = interaction.options.getSubcommand();
@@ -62,17 +88,31 @@ export const licenseCommand = {
     const secret = db.getUserSecret(discordId) || undefined;
     const api = new ApiService({ discordId, secret });
 
-    // Resolve selected app
-    const profileRes = await api.getDiscordProfile().catch(() => null);
-    const selectedAppId = profileRes?.profile?.selected_app_id;
-    const appName = profileRes?.profile?.selected_app_name || selectedAppId;
+    // Resolve target application
+    const inputAppId = interaction.options.getString('app')?.trim();
+    let targetAppId = inputAppId;
+    let appName = 'Application';
 
-    if (!selectedAppId) {
+    if (!targetAppId) {
+      const profileRes = await api.getDiscordProfile().catch(() => null);
+      targetAppId = profileRes?.profile?.selected_app_id;
+      appName = profileRes?.profile?.selected_app_name || targetAppId || 'Application';
+    }
+
+    if (!targetAppId) {
       const apps = await api.getApps().catch(() => []);
       const msg = (!apps || apps.length === 0)
         ? `${EMOJIS.ERROR} You have no applications on your AuthLX dashboard. Create one on the web dashboard first.`
-        : `${EMOJIS.ERROR} No application selected. Use \`/app switch\` to set your active application.`;
+        : `${EMOJIS.ERROR} No application selected. Specify \`app:\` option or use \`/app switch\` to set your active application.`;
       return interaction.reply({ content: msg, ephemeral: true });
+    }
+
+    // Fetch details of target application if custom app option was provided
+    if (inputAppId) {
+      const appDetails = await api.getAppById(targetAppId).catch(() => null);
+      if (appDetails) {
+        appName = appDetails.name;
+      }
     }
 
     try {
@@ -88,7 +128,7 @@ export const licenseCommand = {
 
         const durationSeconds = parseDuration(durationInput);
         const res = await api.generateLicenses({
-          appId: selectedAppId, amount, mask,
+          appId: targetAppId, amount, mask,
           lowercaseLetters: false, capitalLetters: true,
           level, note, expiry: durationSeconds, duration: 1
         });
@@ -98,7 +138,7 @@ export const licenseCommand = {
 
         const embed = new EmbedBuilder()
           .setTitle(`${EMOJIS.LICENSE} Licenses Generated Successfully`)
-          .setColor('#5865F2')
+          .setColor('#22c55e')
           .addFields(
             { name: `${EMOJIS.TAG} Application`, value: `\`${appName}\``, inline: true },
             { name: 'Amount', value: `${amount} key(s)`, inline: true },
@@ -106,7 +146,7 @@ export const licenseCommand = {
             { name: 'Duration', value: getFriendlyDurationName(durationInput), inline: true }
           )
           .setDescription(`**Generated Keys:**\n${keysText.length > 3000 ? keysText.substring(0, 2900) + '\n*(truncated — additional keys saved to dashboard)*' : keysText}`)
-          .setFooter({ text: 'AuthLX Bot • Copy keys above and share with your customers.' })
+          .setFooter({ text: 'AuthLX Bot • Copy keys above and share with your customers. Action logged to Discord Webhook.' })
           .setTimestamp();
 
         return interaction.editReply({ embeds: [embed] });
@@ -117,7 +157,7 @@ export const licenseCommand = {
         await interaction.deferReply({ ephemeral: true });
 
         const filter = (interaction.options.getString('filter') || 'all') as 'all' | 'used' | 'unused';
-        const licenses = await api.getLicenses(selectedAppId, filter);
+        const licenses = await api.getLicenses(targetAppId, filter);
 
         if (!licenses || licenses.length === 0) {
           return interaction.editReply({ content: `${EMOJIS.INFO} No ${filter === 'all' ? '' : filter + ' '}licenses found for **${appName}**.` });
@@ -156,7 +196,7 @@ export const licenseCommand = {
         await interaction.deferReply({ ephemeral: true });
 
         const key = interaction.options.getString('key', true).trim();
-        const licenses = await api.getLicenses(selectedAppId);
+        const licenses = await api.getLicenses(targetAppId);
         const match = licenses.find((l: any) => (l.key || l.license_key || '').toLowerCase() === key.toLowerCase());
 
         if (!match) {
@@ -187,7 +227,7 @@ export const licenseCommand = {
         await interaction.deferReply({ ephemeral: true });
 
         const key = interaction.options.getString('key', true).trim();
-        const licenses = await api.getLicenses(selectedAppId);
+        const licenses = await api.getLicenses(targetAppId);
         const match = licenses.find((l: any) => (l.key || l.license_key || '').toLowerCase() === key.toLowerCase());
 
         if (!match) {

@@ -6,12 +6,12 @@ import { EMOJIS } from '../utils/emojis';
 export const settingsCommand = {
   data: new SlashCommandBuilder()
     .setName('settings')
-    .setDescription('View and manage application settings, version, and integrity hashes.')
+    .setDescription('View and manage application settings, version, webhooks, and integrity hashes.')
     .setIntegrationTypes(ApplicationIntegrationType.UserInstall, ApplicationIntegrationType.GuildInstall)
     .setContexts(InteractionContextType.Guild, InteractionContextType.BotDM, InteractionContextType.PrivateChannel)
     .addSubcommand(sub =>
       sub.setName('view')
-        .setDescription('View current application settings and version.')
+        .setDescription('View current application settings, version, and webhook.')
     )
     .addSubcommand(sub =>
       sub.setName('set')
@@ -35,6 +35,19 @@ export const settingsCommand = {
         .addIntegerOption(o =>
           o.setName('min_username_length').setDescription('Minimum username character length (1–32)').setMinValue(1).setMaxValue(32).setRequired(false)
         )
+    )
+    .addSubcommand(sub =>
+      sub.setName('webhook')
+        .setDescription('Set, test, or remove application Discord Webhook logging URL.')
+        .addStringOption(o =>
+          o.setName('action').setDescription('Webhook action').setRequired(true)
+            .addChoices(
+              { name: 'Set Webhook URL', value: 'set' },
+              { name: 'Test Current Webhook', value: 'test' },
+              { name: 'Remove Webhook URL', value: 'remove' }
+            )
+        )
+        .addStringOption(o => o.setName('url').setDescription('Discord Webhook URL (required for set action)').setRequired(false))
     )
     .addSubcommand(sub =>
       sub.setName('version')
@@ -88,6 +101,7 @@ export const settingsCommand = {
 
         const yn = (v: any) => v ? `${EMOJIS.SUCCESS} Enabled` : `${EMOJIS.ERROR} Disabled`;
         const statusLabel = app?.status ? `${EMOJIS.ACTIVE} Active` : `${EMOJIS.INACTIVE} Disabled`;
+        const webhookLabel = app?.discord_webhook ? `\`${app.discord_webhook.substring(0, 45)}...\`` : 'Not Configured';
 
         const embed = new EmbedBuilder()
           .setTitle(`${EMOJIS.SETTINGS} Settings — ${app?.name || appName}`)
@@ -98,15 +112,61 @@ export const settingsCommand = {
             { name: `${EMOJIS.LOCK} Force HWID`, value: yn(app?.force_hwid), inline: true },
             { name: `${EMOJIS.SHIELD} Hash Check`, value: yn(app?.hash_check), inline: true },
             { name: `${EMOJIS.LOCK} Block Leaked Passwords`, value: yn(app?.block_leaked_passwords), inline: true },
-            { name: `${EMOJIS.LOCK} Token Validation`, value: yn(app?.token_validation), inline: true },
             { name: `${EMOJIS.USER} Min Username Length`, value: `${app?.min_username_length || 1} chars`, inline: true },
-            { name: `${EMOJIS.LOCK} HWID Method`, value: app?.hwid_method || 'windows_user', inline: true },
+            { name: '🔔 Discord Webhook', value: webhookLabel, inline: false },
             { name: `${EMOJIS.SHIELD} Integrity Hashes`, value: `${hashes.length} registered`, inline: true }
           )
           .setFooter({ text: `App ID: ${selectedAppId}` })
           .setTimestamp();
 
         return interaction.editReply({ embeds: [embed] });
+      }
+
+      // ─── WEBHOOK ───────────────────────────────────────────────────────────
+      if (subcommand === 'webhook') {
+        await interaction.deferReply({ ephemeral: true });
+
+        const action = interaction.options.getString('action', true);
+        const urlInput = interaction.options.getString('url')?.trim();
+
+        if (action === 'set') {
+          if (!urlInput || !urlInput.startsWith('http')) {
+            return interaction.editReply({
+              content: `${EMOJIS.ERROR} Please provide a valid Discord Webhook URL starting with \`https://discord.com/api/webhooks/...\`.`
+            });
+          }
+
+          await api.updateAppSettings(selectedAppId, { discord_webhook: urlInput });
+
+          return interaction.editReply({
+            embeds: [
+              new EmbedBuilder()
+                .setTitle('🔔 Discord Webhook Configured')
+                .setColor('#22c55e')
+                .setDescription(`Application logs for **${appName}** will now post automatically to your Discord channel.`)
+                .addFields(
+                  { name: 'Webhook URL', value: `\`${urlInput.substring(0, 50)}...\``, inline: false },
+                  { name: 'Logged Events', value: 'Key Generations, Key Deletions, Bans, User Resets & App Updates', inline: false }
+                )
+                .setFooter({ text: 'Use /settings webhook action:Test to send a test message.' })
+                .setTimestamp()
+            ]
+          });
+        }
+
+        if (action === 'test') {
+          await api.testWebhook(selectedAppId, urlInput || undefined);
+          return interaction.editReply({
+            content: `${EMOJIS.SUCCESS} **Webhook test message sent!** Check your Discord channel to verify delivery.`
+          });
+        }
+
+        if (action === 'remove') {
+          await api.updateAppSettings(selectedAppId, { discord_webhook: null });
+          return interaction.editReply({
+            content: `${EMOJIS.SUCCESS} Discord Webhook URL removed for **${appName}**.`
+          });
+        }
       }
 
       // ─── SET ───────────────────────────────────────────────────────────────
@@ -162,7 +222,6 @@ export const settingsCommand = {
 
         const newVersion = interaction.options.getString('new_version', true).trim();
 
-        // Validate format: must be digits separated by dots e.g. 1.0.0, 2.1, 10.3.5
         if (!/^\d+(\.\d+)*$/.test(newVersion)) {
           return interaction.editReply({
             content: `${EMOJIS.ERROR} Invalid version format \`${newVersion}\`.\nMust be numbers separated by dots, e.g. \`1.0.0\` or \`2.1\`.`

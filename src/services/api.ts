@@ -260,6 +260,15 @@ export class ApiService {
     }
   }
 
+  async testWebhook(appId: string, webhookUrl?: string) {
+    try {
+      const res = await this.client.post(`/apps/${appId}/webhook/test`, { webhook_url: webhookUrl });
+      return res.data;
+    } catch (err) {
+      throw new Error(this.handleError(err));
+    }
+  }
+
   // ===================== INTEGRITY HASHES =====================
   async getHashes(appId: string) {
     try {
